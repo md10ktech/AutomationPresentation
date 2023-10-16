@@ -46,6 +46,3 @@ while isClicking:
         except NoSuchElementException:
             pass
 
-
-def send_report():
-    driver.get_screenshot_as_png()
