@@ -1,8 +1,8 @@
 from selenium import webdriver
-
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
-
+from selenium.common.exceptions import StaleElementReferenceException
+import TestReport as test_report
 import time
 
 chrome_options = webdriver.ChromeOptions()
@@ -37,12 +37,16 @@ while isClicking:
         if numOfCursor.text == "30":
             driver.get_screenshot_as_file("result.png")
             isClicking = False
+            test_report.write_report("Cookie Clicker Cursor Test")
 
     if time.time() > upgradeTime:
         upgradeTime = time.time() + 5
         try:
             upgrade = driver.find_element(By.XPATH, "//*[@id='upgrade0']")
-            upgrade.click()
+            try:
+                upgrade.click()
+            except StaleElementReferenceException:
+                pass
         except NoSuchElementException:
             pass
 
