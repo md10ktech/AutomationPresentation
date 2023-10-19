@@ -3,18 +3,26 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 import time
+import datetime as dt
 import pyautogui
+import TestReport as test_report
 
 # get_node_active_cmd = "cc.director.getScene().getChildByName('Canvas').children[4].children[1].active"
 get_score_cmd = ("cc.director.getScene().getChildByName('Canvas').children[4].children[0].children[0]."
-                      "getComponent(cc.Label).string")
+                 "getComponent(cc.Label).string")
+
+logs = []
+
+pass_text = "✔ PASS"
+fail_text = "✘ FAIL"
+
 test_cases = {
-    "TestCase_1": False,
-    "TestCase_2": False,
-    "TestCase_3": False,
-    "TestCase_4": False,
-    "TestCase_5": False,
-    "TestCase_6": False,
+    "TestCase_1": fail_text,
+    "TestCase_2": fail_text,
+    "TestCase_3": fail_text,
+    "TestCase_4": fail_text,
+    "TestCase_5": fail_text,
+    "TestCase_6": fail_text,
 }
 
 
@@ -31,9 +39,29 @@ def get_console_logs():
     for console_log in driver.get_log('browser'):
         if console_log['level'] == 'INFO':
             console_log = clean_log(console_log['message'])
-            # print(console_log)
             console_logs.append(console_log)
+
+    # print(console_logs)
+    if not console_logs:
+        pass
+    else:
+        global logs
+        logs = logs + console_logs
     return console_logs
+
+
+def get_end_time():
+    global start_time
+    end_time = time.time()
+    test_duration = end_time - start_time
+    if test_duration >= 60:
+        minutes = round(test_duration / 60)
+        seconds = test_duration % 60
+        duration_str = f"{minutes} min {seconds} sec"
+    else:
+        seconds = round(test_duration)
+        duration_str = f"{seconds} sec"
+    return duration_str
 
 
 chrome_options = Options()
@@ -47,12 +75,16 @@ canvas = driver.find_element(By.ID, "GameCanvas")
 time.sleep(3)
 
 # Start Test
+
+start_timestamp = dt.datetime.now()
+start_time = time.time()
 pyautogui.click(500, 500)
-time.sleep(3)
+time.sleep(2)
 
 checking = True
+test_too_long = False
 
-normal_interval = 0.8
+normal_interval = 0.9
 normal_timelapse = time.time() + normal_interval
 rapid_interval = 0.5
 rapid_timelapse = time.time() + rapid_interval
@@ -66,7 +98,7 @@ while checking:
             if log.find("Game Over") > 0:
                 checking = False
             if log.find("Ground") > 0:
-                test_cases["TestCase_1"] = True
+                test_cases["TestCase_1"] = pass_text
                 # print(test_cases)
 
 checking = True
@@ -81,7 +113,7 @@ while checking:
             if log.find("Game Over") > 0:
                 checking = False
             if log.find("Sky") > 0:
-                test_cases["TestCase_2"] = True
+                test_cases["TestCase_2"] = pass_text
                 # print(test_cases)
 
 checking = True
@@ -96,7 +128,7 @@ while checking:
             if log.find("Game Over") > 0:
                 checking = False
             if log.find("Sky") > 0:
-                test_cases["TestCase_3"] = True
+                test_cases["TestCase_3"] = pass_text
 
 checking = True
 
@@ -112,9 +144,15 @@ while checking:
             if log.find("Game Over") > 0:
                 checking = False
             if log.find("Pipe") > 0:
-                test_cases["TestCase_4"] = True
+                test_cases["TestCase_4"] = pass_text
 
-checking = True
+    if time.time() > start_time + 20:
+        checking = False
+        driver.execute_script(f"console.log('Bird is NOT hitting any pipe for too long. Something is wrong!')")
+        test_too_long = True
+
+if not test_too_long:
+    checking = True
 
 # Test Case 5
 while checking:
@@ -128,9 +166,10 @@ while checking:
             if log.find("Game Over") > 0:
                 checking = False
             if log.find("Pipe") > 0:
-                test_cases["TestCase_5"] = True
+                test_cases["TestCase_5"] = pass_text
 
-checking = True
+if not test_too_long:
+    checking = True
 
 # Test Case 6
 while checking:
@@ -146,8 +185,13 @@ while checking:
                 driver.execute_script(f"console.log({get_score_cmd})")
                 for i in get_console_logs():
                     if int(i[1]) > 0:
-                        test_cases["TestCase_6"] = True
+                        test_cases["TestCase_6"] = pass_text
                         checking = False
-                        # TODO: 1. Screenshot 2. Get all logs from start to end. 3. Send report
 
+# TODO: 1. Screenshot 2. Get all logs from start to end. 3. Send report
+time.sleep(2)  # Wait for Game Over
+get_console_logs()  # final logs
+driver.get_screenshot_as_file("game_over.png")
+time.sleep(1)  # Enough time to render the screenshot.
 
+test_report.bird_test_report(start_time=start_timestamp, duration=get_end_time(), logs=logs, testcases=test_cases)
