@@ -5,11 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="014445d7-7585-4333-972e-cf4e9c719887" name="Changes" comment="Cookie Clicker able to automate to get 20 cookies and get screenshot.">
-      <change afterPath="$PROJECT_DIR$/game_over.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/smoketestreport.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FlyingBird.py" beforeDir="false" afterPath="$PROJECT_DIR$/FlyingBird.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TestReport.py" beforeDir="false" afterPath="$PROJECT_DIR$/TestReport.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game_over.png" beforeDir="false" afterPath="$PROJECT_DIR$/game_over.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/result.png" beforeDir="false" afterPath="$PROJECT_DIR$/result.png" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

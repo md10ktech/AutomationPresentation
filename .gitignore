@@ -153,3 +153,5 @@ cython_debug/
 .idea/workspace.xml
 game_over.png
 result.png
+*.xml
+.idea/workspace.xml
